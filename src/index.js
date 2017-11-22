@@ -16,7 +16,7 @@ function returnFirstArgument(arg) {
  Значение по умолчанию второго аргумента должно быть 100
  */
 function defaultParameterValue(a, b) {
-    b ? b : b=100;
+    b ? b : b = 100;
     return a + b;
 }
 
