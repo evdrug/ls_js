@@ -1,114 +1,176 @@
 import { assert } from 'chai';
-import { randomValue as random, randomStringArray } from '../helper';
-import {
-    bindFunction,
-    defaultParameterValue,
-    returnArgumentsArray,
-    returnCounter,
-    returnFirstArgument,
-    returnFnResult
-} from '../src/index';
+import { randomNumberArray, randomStringArray, randomValue as random } from '../helper';
+import { calculator, isAllTrue, isSomeTrue, returnBadArguments } from '../src/index';
 
-describe('ДЗ 1 - функции', () => {
-    describe('returnFirstArgument', () => {
-    it('должна возвращать переданный аргумент', () => {
-        let value = random();
-    let result = returnFirstArgument(value);
+describe('ДЗ 2 - работа с исключениями и отладчиком', () => {
+    describe('isAllTrue', () => {
+        it('должна вызывать fn для всех элементов массива', () => {
+            let array = random('array', 1);
+            let pass = [];
 
-    assert.strictEqual(result, value);
-});
-});
+            isAllTrue(array, e => pass.push(e));
 
-describe('defaultParameterValue', () => {
-    it('должна возвращать сумму переданных аргументов', () => {
-    let valueA = random('number');
-    let valueB = random('number');
-    let result = defaultParameterValue(valueA, valueB);
+            assert.deepEqual(pass, array);
+        });
 
-    assert.strictEqual(result, valueA + valueB);
-});
+        it('должна вернуть true, если fn вернула true для всех элементов массива', () => {
+            let array = randomNumberArray();
+            let result = isAllTrue(array, Number.isFinite);
 
-it('значение по умолчанию второго аргумента должно быть 100', () => {
-    let value = random('number');
-let result = defaultParameterValue(value);
+            assert.isTrue(result);
+        });
 
-assert.strictEqual(result, value + 100);
-});
-});
+        it('должна вернуть false, если fn вернула false хотя бы для одного элемента массива', () => {
+            let array = randomNumberArray();
 
-describe('returnArgumentsArray', () => {
-    it('должна возвращать переданные аргументы в виде массива', () => {
-    let result;
-    let value;
+            array.push(random('string'));
+            let result = isAllTrue(array, Number.isFinite);
 
-    value = random('array', 1);
-    result = returnArgumentsArray(...value);
-    assert.deepEqual(result, value);
-});
+            assert.isFalse(result);
+        });
 
-it('должна возвращать пустой массив если нет аргументов', () => {
-    let result = returnArgumentsArray();
+        it('должна выбросить исключение, если передан пустой массив', () => {
+            assert.throws(isAllTrue.bind(null, [], () => {
+            }), 'empty array');
+        });
 
-assert.deepEqual(result, []);
-});
-});
+        it('должна выбросить исключение, если передан не массив', () => {
+            assert.throws(isAllTrue.bind(null,':(', () => {
+            }), 'empty array');
+            assert.throws(isAllTrue.bind(null, {}), 'empty array');
+        });
 
-describe('returnFnResult', () => {
-    it('должна возвращать результат вызова переданной функции', () => {
-    function fn() {
-        return value;
-    }
+        it('должна выбросить исключение, если fn не функция', () => {
+            let array = randomNumberArray();
 
-    let value = random();
-    let result = returnFnResult(fn);
+            assert.throws(isAllTrue.bind(null, array, ':('), 'fn is not a function');
+        });
+    });
 
-    assert.strictEqual(result, value);
-});
-});
+    describe('isSomeTrue', () => {
+        it('должна вернуть true, если fn вернула true хотя бы для одного элемента массива', () => {
+            let array = randomStringArray().concat(random('number'));
+            let result = isSomeTrue(array, Number.isFinite);
 
-describe('returnCounter', () => {
-    it('должна возвращать функцию', () => {
-    let result = returnCounter();
+            assert.isTrue(result);
+        });
 
-    assert.typeOf(result, 'function');
-});
+        it('должна вернуть false, если fn не вернула true хотя бы для одного элемента массива', () => {
+            let array = randomStringArray();
+            let result = isSomeTrue(array, Number.isFinite);
 
-it('возвращаемая функция должна увеличивать переданное число на единицу при каждом вызове', () => {
-    let value = random('number');
-let result = returnCounter(value);
+            assert.isFalse(result);
+        });
 
-assert.equal(result(), value + 1);
-assert.equal(result(), value + 2);
-assert.equal(result(), value + 3);
-});
+        it('должна выбросить исключение, если передан пустой массив', () => {
+            assert.throws(isSomeTrue.bind(null, [], () => {
+            }), 'empty array');
+        });
 
-it('значение аргумента должно быть 0 по умолчанию', () => {
-    let result = returnCounter();
+        it('должна выбросить исключение, если передан не массив', () => {
+            assert.throws(isSomeTrue.bind(null, ':(', () => {
+            }), 'empty array');
+            assert.throws(isSomeTrue.bind(null, {}), 'empty array');
+        });
 
-assert.equal(result(), 1);
-assert.equal(result(), 2);
-assert.equal(result(), 3);
-});
-});
+        it('должна выбросить исключение, если fn не функция', () => {
+            let array = randomNumberArray();
 
-describe('bindFunction', () => {
-    let valuesArr = randomStringArray();
+            assert.throws(isSomeTrue.bind(null, array, ':('), 'fn is not a function');
+        });
+    });
 
-function fn(...valuesArr) {
-    return [...arguments].join('');
-}
+    describe('returnBadArguments', () => {
+        it('должна вызывать fn для всех элементов массива', () => {
+            let array = random('array', 1);
+            let pass = [];
 
-it('должна возвращать функцию', () => {
-    let result = bindFunction(fn);
+            returnBadArguments(e => pass.push(e), ...array);
 
-assert.typeOf(result, 'function');
-});
+            assert.deepEqual(pass, array);
+        });
 
-it('должна привязывать любое кол-во аргументов возвращаемой функции', () => {
+        it('должна вернуть массив с аргументами, для которых fn выбрасила исключение', () => {
+            let evenNumbers = randomNumberArray('even');
+            let oddNumbers = randomNumberArray('odd');
+            let fn = a => {
+                if (a % 2 != 0) {
+                    throw new Error('not even');
+                }
+            };
+            let result = returnBadArguments(fn, ...evenNumbers, ...oddNumbers);
 
-    let result = bindFunction(fn, ...valuesArr);
+            assert.deepEqual(result, oddNumbers);
+        });
 
-assert.equal(result(), valuesArr.join(''));
-});
-});
+        it('должна вернуть массив пустой массив, если не передано дополнительных аргументов', () => {
+            let fn = () => ':)';
+            let result = returnBadArguments(fn);
+
+            assert.deepEqual(result, []);
+        });
+
+        it('должна выбросить исключение, если fn не функция', () => {
+            assert.throws(returnBadArguments.bind(null, ':('), 'fn is not a function');
+        });
+    });
+
+    describe('calculator', () => {
+        it('должна возвращать объект с методами', () => {
+            let calc = calculator();
+
+            assert.includeMembers(Object.keys(calc), ['sum', 'dif', 'div', 'mul']);
+        });
+
+        it('метод sum должен складывать аргументы', () => {
+            let initialValue = random('number');
+            let calc = calculator(initialValue);
+            let args = randomNumberArray();
+
+            assert.strictEqual(calc.sum(...args), args.reduce((prev, current) => prev + current, initialValue));
+        });
+
+        it('метод dif должен вычитать аргументы', () => {
+            let initialValue = random('number');
+            let calc = calculator(initialValue);
+            let args = randomNumberArray();
+
+            assert.strictEqual(calc.dif(...args), args.reduce((prev, current) => prev - current, initialValue));
+        });
+
+        it('метод div должен делить аргументы', () => {
+            let initialValue = random('number');
+            let calc = calculator(initialValue);
+            let args = randomNumberArray();
+
+            assert.strictEqual(calc.div(...args), args.reduce((prev, current) => prev / current, initialValue));
+        });
+
+        it('метод div должен выбрасывать исключение, если хотя бы один из аргументов равен 0', () => {
+            let initialValue = random('number');
+            let calc = calculator(initialValue);
+            let args = [...randomNumberArray(), 0];
+
+            assert.throws(calc.div.bind(null, ...args), 'division by 0');
+        });
+
+        it('метод mul должен умножать аргументы', () => {
+            let initialValue = random('number');
+            let calc = calculator(initialValue);
+            let args = randomNumberArray();
+
+            assert.strictEqual(calc.mul(...args), args.reduce((prev, current) => prev * current, initialValue));
+        });
+
+        it('функция должна выбрасывать исключение, если number не является числом', () => {
+            assert.throws(calculator.bind(null, ':('), 'number is not a number');
+        });
+
+        it('значение по умолчанию для аргумента number должно быть равно 0', () => {
+            let calc = calculator();
+            let args = randomNumberArray();
+
+            assert.strictEqual(calc.sum(...args), args.reduce((prev, current) => prev + current));
+        });
+    });
 });
