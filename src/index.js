@@ -99,7 +99,7 @@ function calculator(number = 0) {
     if(typeof number !== 'number') {
         throw new Error('number is not a number');
     }
-    // let parametrs = [].slice.call(arguments,1);
+
     let myObject = {};
 
     myObject.sum = function() {
