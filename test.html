@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <p class="class-51">
+        <b>%3E%5CmW</b>
+        <b class="class-51 class-52-90">%40%3Ffy74</b>
+    </p>
+</div>
+
+<script>
+    var body = document.body
+
+        var MutationObserver = window.MutationObserver;
+
+    let observer = new MutationObserver(function(mutations) {
+        console.log(mutations)
+        mutations.forEach(function(mutation) {
+            console.log(mutation.type);
+            console.log(mutation.addedNodes);
+            console.log(mutation.removedNodes);
+        });
+        // for (let i = 0; i < mutation.addedNodes.length; i++) {
+        //     let arg = mutation.addedNodes[i];
+        //     console.log(arg);
+        //     fn({type: 'insert', nodes: arg})
+        // }
+        //
+        // for (let i = 0; i < mutation.removedNodes.length; i++) {
+        //     let arg = mutation.removedNodes[i];
+        //     console.log(arg);
+        //     fn({type: 'remove', nodes: mutation.arg})
+        // }
+    })
+
+
+        // var observer = new MutationObserver(function(mutations) {
+        //     mutations.forEach(function(mutation) {
+        //         console.log(mutation.type);
+        //         console.log(mutation.addedNodes);
+        //         console.log(mutation.removedNodes);
+        //     });
+        // });
+            observer.observe(body, {    attributes: true,
+                                    childList: true,
+                                    characterData: true
+                                });
+
+
+</script>
+</body>
+</html>

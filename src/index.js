@@ -50,13 +50,24 @@ function prepend(what, where) {
  */
 function findAllPSiblings(where) {
     let arr = [];
-    let children = where.children;
-    for (let i = 0; i < children.length; i++) {
-        if(children[i].nextElementSibling && children[i].nextElementSibling.tagName === 'P'){
-            // arr.push(children[i].tagName.toLowerCase());
-            arr.push(children[i]);
+    // let children = where.children;
+    // for (let i = 0; i < children.length; i++) {
+    //     if(children[i].nextElementSibling && children[i].nextElementSibling.tagName === 'P'){
+    //         // arr.push(children[i].tagName.toLowerCase());
+    //         arr.push(children[i]);
+    //     }
+    // }
+
+    function rec(elem) {
+        if(elem){
+            if (elem.tagName === 'P' && elem.previousElementSibling){
+                arr.push(elem.previousElementSibling)
+            }
+            return rec(elem.nextElementSibling)
         }
     }
+
+    rec(where.firstChild);
     return arr;
 }
 
@@ -92,6 +103,12 @@ function findError(where) {
  * должно быть преобразовано в <div></div><p></p>
  */
 function deleteTextNodes(where) {
+    let childrens = where.childNodes;
+    for (let i = 0; i < childrens.length; i++) {
+        if(childrens[i].nodeType === 3){
+            where.removeChild(childrens[i])
+        }
+    }
 }
 
 /**
@@ -105,6 +122,16 @@ function deleteTextNodes(where) {
  * должно быть преобразовано в <span><div><b></b></div><p></p></span>
  */
 function deleteTextNodesRecursive(where) {
+    let childrens = where.childNodes;
+    for (let i = 0; i< childrens.length; i++){
+        if(childrens[i].nodeType === 3) {
+            where.removeChild(childrens[i]);
+            i--;
+        }else {
+            deleteTextNodesRecursive(childrens[i])
+        }
+    }
+
 }
 
 /**
@@ -130,6 +157,31 @@ function deleteTextNodesRecursive(where) {
  * }
  */
 function collectDOMStat(root) {
+    let statObj =   {tags: {},classes: {},texts:0};
+    let childrens= root.childNodes;
+
+    function rec(param,obj) {
+
+        for (let i = 0; i < param.length; i++){
+            if(param[i].nodeType === 3){
+                obj.texts+=1
+            }
+            if(param[i].nodeType === 1){
+                let name = param[i].tagName
+                !obj.tags[name] ? obj.tags[name] = 1 : obj.tags[name] += 1;
+
+                for( let z = 0 ; z < param[i].classList.length; z++){
+                    let className = param[i].classList[z];
+                    !obj.classes[className] ? obj.classes[className] = 1 : obj.classes[className] += 1;
+                }
+
+                rec(param[i].childNodes,obj);
+            }
+        }
+
+    }
+    rec(childrens,statObj);
+    return statObj;
 }
 
 /**
@@ -164,6 +216,27 @@ function collectDOMStat(root) {
  * }
  */
 function observeChildNodes(where, fn) {
+    let observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            let ob = {type: '', nodes: []}
+
+            for (let i = 0; i < mutation.addedNodes.length; i++) {
+                let arg = mutation.addedNodes[i];
+                ob.type = 'insert';
+                ob.nodes.push(arg);
+            }
+            for (let i = 0; i < mutation.removedNodes.length; i++) {
+                let arg = mutation.removedNodes[i];
+                ob.type = 'remove';
+                ob.nodes.push(arg);
+            }
+
+            fn(ob)
+        });
+
+    })
+    observer.observe(where, {attributes: true,childList: true,characterData: true});
+
 }
 
 export {
