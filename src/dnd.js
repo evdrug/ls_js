@@ -28,13 +28,14 @@ function createDiv() {
     }
 
     let newDiv2 = document.createElement('div');
-    newDiv2.classList.add("draggable-div");
-    newDiv2.style.width = myRandom(100) + "px";
-    newDiv2.style.height = myRandom(100) + "px";
+    newDiv2.classList.add('draggable-div');
+    newDiv2.style.width = myRandom(100) + 'px';
+    newDiv2.style.height = myRandom(100) + 'px';
     newDiv2.style.background =`rgb(${myRandom(256)},${myRandom(256)},${myRandom(256)})`;
-    newDiv2.style.position = "absolute";
-    newDiv2.style.left = myRandom(window.innerWidth) + "px";
-    newDiv2.style.top = myRandom(window.innerHeight) + "px";
+    newDiv2.style.position = 'absolute';
+    newDiv2.style.left = myRandom(window.innerWidth) + 'px';
+    newDiv2.style.top = myRandom(window.innerHeight) + 'px';
+
     return newDiv2;
 }
 
@@ -45,6 +46,7 @@ function createDiv() {
  */
 function getCoords(elem) {
     var box = elem.getBoundingClientRect();
+
     return {
         top: box.top + pageYOffset,
         left: box.left + pageXOffset
@@ -55,19 +57,19 @@ function addListeners(target) {
     let flag = false;
     let shiftX;
     let shiftY;
-    target.addEventListener('mousedown',(e)=>{
+    target.addEventListener('mousedown', (e)=>{
         flag = true;
         let coords = getCoords(target);
         shiftX = e.pageX - coords.left;
         shiftY = e.pageY - coords.top;
         target.style.zIndex = 10;
     })
-    target.addEventListener('mouseup',(e)=>{
+    target.addEventListener('mouseup', ()=>{
         flag = false;
         target.style.zIndex = 1;
     })
-    document.addEventListener('mousemove', function(e) {
-        if(flag){
+    document.addEventListener('mousemove', (e)=>{
+        if (flag) {
             target.style.left = e.pageX - shiftX + 'px';
             target.style.top = e.pageY - shiftY + 'px';
         }
