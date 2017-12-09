@@ -25,7 +25,7 @@
  * Запрещено использовать сторонние библиотеки. Разрешено пользоваться только тем, что встроено в браузер
  */
 
-import {createCookie} from "./index";
+import {createCookie,deleteCookie} from "./index";
 
 /**
  * homeworkContainer - это контейнер для всех ваших домашних заданий
@@ -47,10 +47,9 @@ let myObj = {
         for(let i=0; i<listTable.children.length;i++){
             if(listTable.children[i].firstChild.innerText === arg) {
                 return listTable.children[i];
-            }else{
-                return false;
             }
         }
+        return false;
     },
     createElTr: function(elem,name,value) {
         let tr = document.createElement('tr');
@@ -72,13 +71,20 @@ filterNameInput.addEventListener('keyup', function() {
 
 addButton.addEventListener('click', () => {
     createCookie(addNameInput.value,addValueInput.value);
-    console.log(addNameInput.value,addValueInput.value);
     if(myObj.searchTable(addNameInput.value)){
         myObj.searchTable(addNameInput.value).children[1].innerText = addValueInput.value;
     }else {
-        myObj.createElTr(listTable, addNameInput.value, addValueInput.value);
+        myObj.createElTr(listTable,addNameInput.value,addValueInput.value);
     }
-    console.log(document.cookie);
-    addNameInput.value = ''
-    addValueInput.value = ''
+    // addNameInput.value = ''
+    // addValueInput.value = ''
 });
+
+listTable.addEventListener('click',function (e) {
+    if(e.target.tagName === 'BUTTON'){
+        let trTable = e.target.parentNode.parentNode;
+        deleteCookie(trTable.firstChild.innerText);
+        trTable.remove();
+    }
+
+})
