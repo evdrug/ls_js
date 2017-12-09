@@ -5,103 +5,113 @@
     <title>Title</title>
 </head>
 <body>
+<style>
+    #homework-container {
+        font-family: Geneva, Arial, Helvetica, sans-serif;
+    }
 
+    #homework-container input {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px 0;
+    }
+
+    #homework-container table {
+        width: 100%;
+    }
+
+    #homework-container table td,
+    #homework-container table th {
+        padding: 5px;
+        text-align: left;
+    }
+
+    #homework-container tbody tr:nth-child(odd) {
+        background: #ddd;
+    }
+</style>
 <div id="homework-container">
-    <button id="addDiv">ADD</button>
+    <div id="filter-block">
+        Поиск cookie: <input type="text" id="filter-name-input" placeholder="имя cookie">
+    </div>
+    <hr>
+    <div id="add-block">
+        Добавить cookie:<br>
+        <input type="text" id="add-name-input" placeholder="имя cookie"><br>
+        <input type="text" id="add-value-input" placeholder="значение cookie"><br>
+        <button id="add-button">добавить cookie</button>
+    </div>
+    <hr>
+    <div id="list-block">
+        Доступные cookie:
+        <table id="list-table">
+            <thead>
+            <tr>
+                <th>имя</th>
+                <th>значение</th>
+                <th>удалить</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- tr добавлять сюда -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    /** Со звездочкой */
-    /**
-     * Создать страницу с кнопкой
-     * При нажатии на кнопку должен создаваться div со случайными размерами, цветом и позицией
-     * Необходимо предоставить возможность перетаскивать созданные div при помощи drag and drop
-     * Запрощено использовать сторонние библиотеки. Разрешено пользоваться только тем, что встроено в браузер
-     */
+    function createCookie(name, value) {
+        document.cookie = `${name}=${value}`;
+    }
 
-    /**
-     * homeworkContainer - это контейнер для всех ваших домашних заданий
-     * Если вы создаете новые html-элементы и добавляете их на страницу, то дабавляйте их только в этот контейнер
-     *
-     * @example
-     * homeworkContainer.appendChild(...);
-     */
     let homeworkContainer = document.querySelector('#homework-container');
+    let filterNameInput = homeworkContainer.querySelector('#filter-name-input');
+    let addNameInput = homeworkContainer.querySelector('#add-name-input');
+    let addValueInput = homeworkContainer.querySelector('#add-value-input');
+    let addButton = homeworkContainer.querySelector('#add-button');
+    let listTable = homeworkContainer.querySelector('#list-table tbody');
 
-    /**
-     * Функция должна создавать и возвращать новый div с классом draggable-div и случайными размерами/цветом/позицией
-     * Функция должна только создавать элемент и задвать ему случайные размер/позицию/цвет
-     * Функция НЕ должна добавлять элемент на страницу
-     *
-     * @return {Element}
-     */
-    function createDiv() {
-        function myRandom(x) {
-            return Math.floor(Math.random() * x);
-        }
-
-        let newDiv2 = document.createElement('div');
-        newDiv2.classList.add("draggable-div");
-        newDiv2.style.width = myRandom(100) + "px";
-        newDiv2.style.height = myRandom(200) + "px";
-        newDiv2.style.background =`rgb(${myRandom(256)},${myRandom(256)},${myRandom(256)})`;
-        newDiv2.style.position = "absolute";
-        newDiv2.style.left = myRandom(window.innerWidth) + "px";
-        newDiv2.style.top = myRandom(window.innerHeight) + "px";
-        return newDiv2;
-    }
-
-    /**
-     * Функция должна добавлять обработчики событий для перетаскивания элемента при помощи drag and drop
-     *
-     * @param {Element} target
-     */
-
-    function getCoords(elem) {
-        var box = elem.getBoundingClientRect();
-        return {
-            top: box.top + pageYOffset,
-            left: box.left + pageXOffset
-        };
-    }
-
-    function addListeners(target) {
-        let flag = false;
-        let shiftX;
-        let shiftY;
-        target.addEventListener('mousedown',(e)=>{
-            flag = true;
-            let coords = getCoords(target);
-            shiftX = e.pageX - coords.left;
-            shiftY = e.pageY - coords.top;
-            target.style.zIndex = 10;
-        })
-        target.addEventListener('mouseup',(e)=>{
-            flag = false;
-            target.style.zIndex = 1;
-        })
-        document.addEventListener('mousemove', function(e) {
-            if(flag){
-                target.style.left = e.pageX - shiftX + 'px';
-                target.style.top = e.pageY - shiftY + 'px';
+    let myObj = {
+        cookies: document.cookie,
+        searchTable: function(arg){
+            for(let i=0; i<listTable.children.length;i++){
+                if(listTable.children[i].firstChild.innerText === arg) {
+                    return listTable.children[i];
+                }else{
+                    return false;
+                }
             }
-        })
+        },
+        createElTr: function(elem,name,value) {
+            let tr = document.createElement('tr');
+            this.createElTd(tr,name);
+            this.createElTd(tr,value);
+            this.createElTd(tr,`<button class="delet deleteCookies" data="${name}">удалить</button>`);
+            elem.appendChild(tr);
+        },
+        createElTd: function(elem,param) {
+            let td = document.createElement('td')
+            td.innerHTML=param;
+            elem.appendChild(td);
+        },
     }
 
-    let addDivButton = homeworkContainer.querySelector('#addDiv');
 
-    addDivButton.addEventListener('click', function() {
-        // создать новый div
-        let div = createDiv();
-
-        // добавить на страницу
-        homeworkContainer.appendChild(div);
-        // назначить обработчики событий мыши для реализации d&d
-        addListeners(div);
-        // можно не назначать обработчики событий каждому div в отдельности, а использовать делегирование
-        // или использовать HTML5 D&D - https://www.html5rocks.com/ru/tutorials/dnd/basics/
+    filterNameInput.addEventListener('keyup', function() {
     });
 
+    addButton.addEventListener('click', () => {
+        createCookie(addNameInput.value,addValueInput.value);
+
+        if(myObj.searchTable(addNameInput.value)){
+            myObj.searchTable(addNameInput.value).children[1].innerText = addValueInput.value;
+        }else {
+            myObj.createElTr(listTable,addNameInput.value,addValueInput.value);
+        }
+        addNameInput.value = ''
+        addValueInput.value = ''
+    });
 
 
 </script>
