@@ -42,7 +42,14 @@ let addButton = homeworkContainer.querySelector('#add-button');
 let listTable = homeworkContainer.querySelector('#list-table tbody');
 
 let myObj = {
-    cookies: document.cookie,
+    listCookies: document.cookie.split('; '),
+    cookies: function(){
+        return this.listCookies.reduce((prev,count)=>{
+            let [name, value] = count.split('=');
+            prev[name]=value;
+            return prev;
+        },{});
+    },
     searchTable: function(arg){
         for(let i=0; i<listTable.children.length;i++){
             if(listTable.children[i].firstChild.innerText === arg) {
@@ -63,23 +70,53 @@ let myObj = {
         td.innerHTML=param;
         elem.appendChild(td);
     },
+    check:function (full, chunk) {
+        if (full.toLowerCase().indexOf(chunk.toLowerCase()) === -1) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+    createTable: function(obj) {
+        listTable.innerHTML='';
+        for ( let item in obj){
+            this.createElTr(listTable,item,obj[item]);
+        }
+    },
+    sortObj: function(arg) {
+        if(arg){
+            let sort = {};
+            for ( let item in this.cookies()){
+                if(this.check(item,arg) || this.check(this.cookies()[item],arg)) {
+                    sort[item] = this.cookies()[item];
+                }
+            }
+            return sort;
+        }else {
+            return this.cookies();
+        }
+    },
 }
 
 
-filterNameInput.addEventListener('keyup', function() {
+filterNameInput.addEventListener('keyup', function(e) {
+    let value = e.target.value.trim();
+    myObj.createTable(myObj.sortObj(value));
+
 });
 
 addButton.addEventListener('click', () => {
     createCookie(addNameInput.value,addValueInput.value);
-    if(myObj.searchTable(addNameInput.value)){
-        myObj.searchTable(addNameInput.value).children[1].innerText = addValueInput.value;
+    let search = myObj.searchTable(addNameInput.value);
+    if(search){
+        search.children[1].innerText = addValueInput.value;
+        myObj.listCookies = document.cookie.split('; ');
+        myObj.createTable(myObj.sortObj(filterNameInput.value))
     }else {
-        myObj.createElTr(listTable,addNameInput.value,addValueInput.value);
+        myObj.listCookies = document.cookie.split('; ');
+        myObj.createTable(myObj.sortObj(filterNameInput.value))
     }
-    // addNameInput.value = ''
-    // addValueInput.value = ''
 });
-
 listTable.addEventListener('click',function (e) {
     if(e.target.tagName === 'BUTTON'){
         let trTable = e.target.parentNode.parentNode;
@@ -88,3 +125,4 @@ listTable.addEventListener('click',function (e) {
     }
 
 })
+myObj.createTable(myObj.sortObj())
