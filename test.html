@@ -3,106 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body,html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Fira Sans', sans-serif;
+            color: #4f4f4f;
+        }
+        .wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0,0,0,.4);
+        }
+
+        .box {
+            width: 620px;
+            height: 491px;
+            background-color: #fff;
+            -webkit-border-radius: 7px;
+            -moz-border-radius: 7px;
+            border-radius: 7px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .box__title {
+            background-color: rgb(255,134,99);
+            display: flex;
+            justify-content: space-between ;
+        }
+
+        .box__title-text {
+            padding: 17px;
+            font-size: 16px;
+            /*font-family: 'Fira Sans', sans-serif;*/
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .box__title-close {
+            margin: 20px;
+            display: block;
+            width: 14px;
+            height: 14px;
+        }
+        .close {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            transition: .2s;
+
+        }
+        .close:hover {
+            transform: scale(1.1);
+            transition: .2s;
+        }
+        .close:after{
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: -4px;
+            display: block;
+            width: 19px;
+            height: 3px;
+            background-color: #fff;
+            transform: rotate(45deg);
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+        }
+
+        .close:before{
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: -4px;
+            display: block;
+            width: 19px;
+            height: 3px;
+            background-color: #fff;
+            transform: rotate(-45deg);
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+        }
+
+        .box__footer {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end ;
+            background: rgb(240,240,240);
+
+        }
+
+        .btn-save {
+            width: 90px;
+            height: 30px;
+            margin: 10px;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            background: rgb(255,134,99);
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .btn-save:hover {
+            background: rgb(204,107,79);
+        }
+        .box__content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .box__filter {
+            width: 100%;
+            height: 45px;
+            background: rgb(240,240,240);
+            display: flex;
+        }
+        .filter-left, .filter-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+
+        }
+        .label {
+            height: 60%;
+            width: 90%;
+
+        }
+
+        .input {
+            width: 100%;
+            height: 100%;
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
+            border-radius: 15px;
+            border: 1px solid transparent;
+            padding-left: 30px;
+        }
+
+        .label:before {
+            content: '';
+            position: absolute;
+            top: 7px;
+            left: 17px;
+            width: 30px;
+            height: 30px;
+            background-image: url("src/img/.png");
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .input:focus {
+            border-color:  rgb(255,134,99);
+            outline: none;
+        }
+
+        .block {
+            flex-grow: 1;
+            display: flex;
+        }
+        .block-content {
+            flex-grow: 1;
+            border-left: 2px solid #f0f0f0;
+            padding-left: 10px;
+            padding-right: 10px;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .block-content:first-child {
+            border-left: 0px;
+        }
+
+        .block-content__title {
+            padding-top: 15px;
+            padding-bottom: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .block-content__body {
+            height: 307px;
+            overflow: auto;
+            padding-right: 5px;
+        }
+
+        .user {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user:hover {
+            background-color:  #f0f0f0;
+        }
+        .user:last-child {
+            border-bottom: 0px;
+        }
+
+        .user__content {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .user__photo {
+            width: 48px;
+            height: 48px;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            background-color: rgb(255,134,99);
+            margin-right: 10px;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+
+        .user__img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .user__name {
+        }
+
+        .user__add, .user__remove {
+            width: 13px;
+            height: 13px;
+            padding-right: 20px;
+
+        }
+        .user__add .close {
+            transform: rotate(45deg);
+        }
+
+        .user__add .close:hover {
+            transform: rotate(45deg) scale(1.1);
+        }
+
+        .user__add .close:after, .user__add .close:before {
+            background-color: #7f7f7f;
+        }
+        .user__remove .close:after, .user__remove .close:before {
+            background-color: #7f7f7f;
+        }
+
+        .block-content__body::-webkit-scrollbar-track {border-radius: 4px;}
+        .block-content__body::-webkit-scrollbar {width: 6px;}
+        .block-content__body::-webkit-scrollbar-thumb {border-radius: 4px;background: transparent;}
+        .block-content__body:hover::-webkit-scrollbar-thumb {background: #7f7f7f;}
+    </style>
 </head>
 <body>
 
-<div id="homework-container">
-    <button id="addDiv">ADD</button>
+<div class="wrapper">
+    <div class="box">
+        <div class="box__title">
+            <div class="box__title-text">Выберите друзей</div>
+            <div class="box__title-close"><div class="close"></div></div>
+        </div>
+        <div class="box__content">
+            <div class="box__filter">
+                <div class="filter-left">
+                    <label class="label">
+                        <input type="text" class="input input-left" name="filter-left" placeholder="Начтине вводить имя друга">
+                    </label>
+                </div>
+                <div class="filter-right">
+                    <label class="label">
+                        <input type="text" class="input input-right" name="filter-right" placeholder="Начтине вводить имя друга">
+                    </label>
+                </div>
+            </div>
+            <div class="block">
+                <div class="block-content">
+                    <div class="block-content__title">
+                        Ваши друзья
+                    </div>
+                    <div class="block-content__body">
+                        <ul class="block-content__list">
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="block-content__title">
+                        Друзья в списке
+                    </div>
+                    <ul class="block-content__body list-right-js">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="box__footer">
+            <button class="btn-save">Сохранить</button>
+        </div>
+
+    </div>
 </div>
+<script id="user-template" type="text/x-handlebars-template">
+        {{#each list}}
+        <li class="user">
+            <div class="user__content">
+                <div class="user__photo" ><img src="{{photo}}" alt="" class="user__img"></div>
+                <div class="user__name">{{userName}}</div>
+            </div>
+            <div class="user__remove"><div class="close"></div></div>
+        </li>
+        {{/each}}
 
+</script>
 <script>
-    /** Со звездочкой */
-    /**
-     * Создать страницу с кнопкой
-     * При нажатии на кнопку должен создаваться div со случайными размерами, цветом и позицией
-     * Необходимо предоставить возможность перетаскивать созданные div при помощи drag and drop
-     * Запрощено использовать сторонние библиотеки. Разрешено пользоваться только тем, что встроено в браузер
-     */
 
-    /**
-     * homeworkContainer - это контейнер для всех ваших домашних заданий
-     * Если вы создаете новые html-элементы и добавляете их на страницу, то дабавляйте их только в этот контейнер
-     *
-     * @example
-     * homeworkContainer.appendChild(...);
-     */
-    let homeworkContainer = document.querySelector('#homework-container');
-
-    /**
-     * Функция должна создавать и возвращать новый div с классом draggable-div и случайными размерами/цветом/позицией
-     * Функция должна только создавать элемент и задвать ему случайные размер/позицию/цвет
-     * Функция НЕ должна добавлять элемент на страницу
-     *
-     * @return {Element}
-     */
-    function createDiv() {
-        function myRandom(x) {
-            return Math.floor(Math.random() * x);
-        }
-
-        let newDiv2 = document.createElement('div');
-        newDiv2.classList.add("draggable-div");
-        newDiv2.style.width = myRandom(100) + "px";
-        newDiv2.style.height = myRandom(200) + "px";
-        newDiv2.style.background =`rgb(${myRandom(256)},${myRandom(256)},${myRandom(256)})`;
-        newDiv2.style.position = "absolute";
-        newDiv2.style.left = myRandom(window.innerWidth) + "px";
-        newDiv2.style.top = myRandom(window.innerHeight) + "px";
-        return newDiv2;
+    var context = {
+        title: "My First Blog Post!",
+        author: {
+            id: 47,
+            name: "Yehuda Katz"
+        },
+        body: "My first post. Wheeeee!"
+    };
+    var userList = {
+        list:[{
+            userName: "Yehuda Katz",
+            photo: 'https://pp.userapi.com/c638324/v638324863/bbd5/JvAtEfnhYTI.jpg'
+        },
+        {
+            userName: "Yehuda1 Katz",
+            photo: 'https://pp.userapi.com/c638324/v638324863/bbd5/JvAtEfnhYTI.jpg'
+        },
+        {
+            userName: "Yehuda1 Katz",
+            photo: 'https://pp.userapi.com/c638324/v638324863/bbd5/JvAtEfnhYTI.jpg'
+        },
+        ]
     }
 
-    /**
-     * Функция должна добавлять обработчики событий для перетаскивания элемента при помощи drag and drop
-     *
-     * @param {Element} target
-     */
+    const template = document.querySelector('#user-template').textContent;
+    const ren = Handlebars.compile(template);
 
-    function getCoords(elem) {
-        var box = elem.getBoundingClientRect();
-        return {
-            top: box.top + pageYOffset,
-            left: box.left + pageXOffset
-        };
-    }
-
-    function addListeners(target) {
-        let flag = false;
-        let shiftX;
-        let shiftY;
-        target.addEventListener('mousedown',(e)=>{
-            flag = true;
-            let coords = getCoords(target);
-            shiftX = e.pageX - coords.left;
-            shiftY = e.pageY - coords.top;
-            target.style.zIndex = 10;
-        })
-        target.addEventListener('mouseup',(e)=>{
-            flag = false;
-            target.style.zIndex = 1;
-        })
-        document.addEventListener('mousemove', function(e) {
-            if(flag){
-                target.style.left = e.pageX - shiftX + 'px';
-                target.style.top = e.pageY - shiftY + 'px';
-            }
-        })
-    }
-
-    let addDivButton = homeworkContainer.querySelector('#addDiv');
-
-    addDivButton.addEventListener('click', function() {
-        // создать новый div
-        let div = createDiv();
-
-        // добавить на страницу
-        homeworkContainer.appendChild(div);
-        // назначить обработчики событий мыши для реализации d&d
-        addListeners(div);
-        // можно не назначать обработчики событий каждому div в отдельности, а использовать делегирование
-        // или использовать HTML5 D&D - https://www.html5rocks.com/ru/tutorials/dnd/basics/
-    });
-
-
+    let listRight = document.querySelector('.list-right-js');
+    listRight.innerHTML = ren(userList);
+    // console.log()
 
 </script>
 </body>
