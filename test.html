@@ -394,14 +394,21 @@
 </script>
 <script>
 
-    var context = {
-        title: "My First Blog Post!",
-        author: {
-            id: 47,
-            name: "Yehuda Katz"
+    let content = {
+        templateR: document.querySelector('#user-template').textContent,
+        templateL: document.querySelector('#user-template2').textContent,
+        listRight: document.querySelector('.list-right-js'),
+        listLeft: document.querySelector('.list-left-js'),
+        compR: function () {
+            let self = this;
+             return Handlebars.compile(self.templateR);
         },
-        body: "My first post. Wheeeee!"
-    };
+        compL: function () {
+            let self = this;
+             return Handlebars.compile(self.templateL);
+        }
+
+    }
     var userListRight = {
         list:[{
             userName: "Yehuda Katz",
@@ -446,16 +453,8 @@
         ]
     }
 
-    const templateR = document.querySelector('#user-template').textContent;
-    const templateL = document.querySelector('#user-template2').textContent;
-    const renR = Handlebars.compile(templateR);
-    const renL = Handlebars.compile(templateL);
-
-    let listRight = document.querySelector('.list-right-js');
-    let listLeft = document.querySelector('.list-left-js');
-    listRight.innerHTML = renR(userListRight);
-    listLeft.innerHTML = renL(userListLeft);
-    // console.log()
+    content.listRight.innerHTML = content.compR()(userListRight);
+    content.listLeft.innerHTML = content.compL()(userListLeft);
 
 </script>
 </body>
