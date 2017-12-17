@@ -239,6 +239,7 @@
 
     function start(e) {
         e.dataTransfer.effectAllowed = 'move';
+
         e.dataTransfer.setData('text/html',e.target.innerHTML)
     }
 
@@ -253,20 +254,23 @@
 
     function handleDragDrop(e) {
         var data = e.dataTransfer.getData('text/html');
-        console.log(e.target.parentNode);
-        e.target.parentNode.appendChild('<li>sssss</li>')
-        // e.target.parentNode.appendChild(document.getElementById(data));
+
+        var li = document.createElement('li');
+        li.classList.add('user');
+        li.setAttribute('draggable',true)
+        li.innerHTML = data;
+        e.target.closest('ul').appendChild(li);
         e.stopPropagation();
         return false;
     }
 
     content.listRight.addEventListener('dragover',handleDragOver, false);
     content.listRight.addEventListener('drop',handleDragDrop, false);
-    content.listRight.addEventListener('dragenter',handleDragEnter, false);
+    // content.listRight.addEventListener('dragenter',handleDragEnter, false);
 
     content.listLeft.addEventListener('dragover',handleDragOver, false);
     content.listLeft.addEventListener('drop',handleDragDrop, false);
-    content.listLeft.addEventListener('dragenter',handleDragEnter, false);
+    // content.listLeft.addEventListener('dragenter',handleDragEnter, false);
 
     let list = document.getElementsByTagName('li')
         console.log(list);
