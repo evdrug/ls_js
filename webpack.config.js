@@ -8,16 +8,13 @@ let path = require('path');
 loaders.push({
     test: /\.css$/,
     loader: ExtractTextPlugin.extract({
-        fallbackLoader: 'style-loader',
-        loader: 'css-loader'
+        fallback: 'style-loader',
+        use: 'css-loader'
     })
 });
 
 module.exports = {
-    entry: {
-        main: './src/index.js',
-        cookie: './src/cookie.js'
-    },
+    entry: './src/index.js',
     output: {
         filename: '[name].[hash].js',
         path: path.resolve('dist')
@@ -35,15 +32,8 @@ module.exports = {
         }),
         new ExtractTextPlugin('styles.css'),
         new HtmlPlugin({
-            title: 'Main Homework',
-            template: 'index.hbs',
-            chunks: ['main']
-        }),
-        new HtmlPlugin({
-            title: 'Div Drag And Drop',
-            template: 'cookie.hbs',
-            filename: 'cookie.html',
-            chunks: ['cookie']
+            title: 'Другой Фильтр',
+            template: 'index.hbs'
         }),
         new CleanWebpackPlugin(['dist'])
     ]

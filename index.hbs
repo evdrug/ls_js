@@ -3,7 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <title>{{htmlWebpackPlugin.options.title}}</title>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
 </head>
 <body>
+<div class="wrapper">
+    <div class="box">
+        <div class="box__title">
+            <div class="box__title-text">Выберите друзей</div>
+            <div class="box__title-close"><div class="close"></div></div>
+        </div>
+        <div class="box__content">
+            <div class="box__filter">
+                <div class="filter-left">
+                    <label class="label">
+                        <input type="text" class="input input-left" name="filter-left" placeholder="Начтине вводить имя друга">
+                    </label>
+                </div>
+                <div class="filter-right">
+                    <label class="label">
+                        <input type="text" class="input input-right" name="filter-right" placeholder="Начтине вводить имя друга">
+                    </label>
+                </div>
+            </div>
+            <div class="block">
+                <div class="block-content">
+                    <div class="block-content__title">
+                        Ваши друзья
+                    </div>
+                    <div class="block-content__body">
+                        <ul class="block-content__list list-left-js">
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                            <li class="user">
+                                <div class="user__content">
+                                    <div class="user__photo"></div>
+                                    <div class="user__name">Друзьякин Евгений</div>
+                                </div>
+                                <div class="user__add"><div class="close"></div></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="block-content__title">
+                        Друзья в списке
+                    </div>
+                    <ul class="block-content__body list-right-js">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="box__footer">
+            <button class="btn-save">Сохранить</button>
+        </div>
+
+    </div>
+</div>
 </body>
 </html>
