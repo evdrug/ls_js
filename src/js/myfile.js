@@ -49,8 +49,8 @@ let content = {
     userListRight : function () {
         return localStorage.dataR ? JSON.parse(localStorage.dataR) : undefined;
     },
-    templateR: require('../blockR.hbs'),
-    templateL: require('../blockL.hbs'),
+    templateR: document.querySelector('#user-template').textContent,
+    templateL: document.querySelector('#user-template2').textContent,
     listRight: document.querySelector('.list-right-js'),
     listLeft: document.querySelector('.list-left-js'),
     inputL: document.querySelector('.input-left'),
@@ -59,11 +59,11 @@ let content = {
     btnSave: document.querySelector('.btn-save'),
     compR: function () {
         let self = this;
-        return Handlebars.compile(self.templateR());
+        return Handlebars.compile(self.templateR);
     },
     compL: function () {
         let self = this;
-        return Handlebars.compile(self.templateL());
+        return Handlebars.compile(self.templateL);
     },
     removeUser: function(elem,list) {
         for (let i = 0; i < list.length;i++){
@@ -100,7 +100,7 @@ var userListRight = {
 var userListLeft = {
     list:[]
 }
-console.log(content.templateL())
+
 window.onload = content.init();
 
 let sortL = {list:[]};
@@ -218,7 +218,5 @@ content.listRight.addEventListener('dragenter',handleDragEnter, false);
 
 
 content.block.addEventListener('mousedown',function (e) {
-    if(e.target.closest('li')){
-        e.target.closest('li').addEventListener('dragstart', start, false);
-    }
+    e.target.closest('li').addEventListener('dragstart', start, false);
 })

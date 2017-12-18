@@ -218,5 +218,7 @@ content.listRight.addEventListener('dragenter',handleDragEnter, false);
 
 
 content.block.addEventListener('mousedown',function (e) {
-    e.target.closest('li').addEventListener('dragstart', start, false);
+    if(e.target.closest('li')){
+        e.target.closest('li').addEventListener('dragstart', start, false);
+    }
 })
