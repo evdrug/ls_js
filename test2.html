@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vk</title>
+    <script src="https://vk.com/js/api/openapi.js?151" type="text/javascript"></script>
+</head>
+<body>
+
+<script>
+    VK.init({
+        apiId: 6302893
+    });
+
+
+    function callAPI(method,params) {
+        return new Promise((resolve,reject)=>{
+            VK.api(method,params,(data)=>{
+                if(data.error) {
+                    reject(data.error)
+                }else {
+                   resolve(data.response);
+                }
+            })
+        })
+    }
+
+
+    function vkAut() {
+        return new Promise((resolve,reject) => {
+            VK.Auth.login(data => {
+                if(data.session){
+                    resolve();
+                }else {
+                    reject(new Error('Не удалось авторизоваться.'));
+                }
+            },2)
+        })
+    }
+
+    vkAut()
+        .then(()=>{
+        return callAPI('friends.get',{fields:'photo_100'})
+        })
+        .then((response)=>{
+            let frends = []
+            for(let i in response){
+                let fio = `${response[i].first_name} ${response[i].last_name}`
+                let photo = `${response[i].photo_100}`
+                frends.push({userName:fio,'photo':photo})
+            }
+            console.log(frends)
+        })
+
+</script>
+</body>
+</html>

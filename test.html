@@ -5,6 +5,7 @@
     <title>Title</title>
     <link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+    <script src="https://vk.com/js/api/openapi.js?151" type="text/javascript"></script>
     <link rel="stylesheet" href="myfile.css">
 </head>
 <body>
@@ -32,10 +33,8 @@
                     <div class="block-content__title">
                         Ваши друзья
                     </div>
-                    <div class="block-content__body">
-                        <ul class="block-content__list list-left-js">
+                        <ul class="block-content__body list-left-js">
                         </ul>
-                    </div>
                 </div>
                 <div class="block-content">
                     <div class="block-content__title">
@@ -56,7 +55,7 @@
         {{#each list}}
         <li class="user" draggable="true">
             <div class="user__content">
-                <div class="user__photo" ><img src="{{photo}}" alt="" class="user__img"></div>
+                <div class="user__photo" ><img draggable="false"  src="{{photo}}" alt="" class="user__img"></div>
                 <div class="user__name">{{userName}}</div>
             </div>
             <div class="user__remove"><div class="close"></div></div>
@@ -69,7 +68,7 @@
     {{#each list}}
     <li class="user" draggable="true">
         <div class="user__content">
-            <div class="user__photo" ><img src="{{photo}}" alt="" class="user__img"></div>
+            <div class="user__photo"><img draggable="false"  src="{{photo}}" alt="" class="user__img"></div>
             <div class="user__name">{{userName}}</div>
         </div>
         <div class="user__add"><div class="close"></div></div>
@@ -79,6 +78,53 @@
 </script>
 <script>
     let content = {
+        init: function () {
+            let self = this;
+          this.vkAuth().then(()=>{
+              return this.callAPI('friends.get',{fields:'photo_100'})
+          })
+              .then((response)=>{
+                  let frends = []
+                  for(let i in response){
+                      let fio = `${response[i].first_name} ${response[i].last_name}`
+                      let photo = `${response[i].photo_100}`
+                          frends.push({userName:fio,'photo':photo})
+
+                  }
+                    userListLeft.list=frends;
+                  content.update(userListLeft,sortR);
+              });
+          console.log();
+        },
+        vkAuth:function() {
+            return new Promise((resolve,reject) => {
+                VK.init({
+                    apiId: 6302893
+                });
+                VK.Auth.login(data => {
+                    if(data.session){
+                        resolve();
+                    }else {
+                        reject(new Error('Не удалось авторизоваться.'));
+                    }
+                },2)
+            })
+        },
+        callAPI: function(method,params) {
+            return new Promise((resolve,reject)=>{
+                VK.api(method,params,(data)=>{
+                    params.v = '5.69';
+                    if(data.error) {
+                        reject(data.error)
+                    }else {
+                        resolve(data.response);
+                    }
+                })
+            })
+        },
+        userListRight : function () {
+            return localStorage.dataR ? JSON.parse(localStorage.dataR) : undefined;
+        },
         templateR: document.querySelector('#user-template').textContent,
         templateL: document.querySelector('#user-template2').textContent,
         listRight: document.querySelector('.list-right-js'),
@@ -106,8 +152,8 @@
             list.push(elem)
         },
         dataF: function(elem) {
-            let photo = elem.previousElementSibling.children[0].children[0].getAttribute('src');
-            let user = elem.previousElementSibling.children[1].textContent;
+            let photo = elem.closest('li').children[0].children[0].children[0].getAttribute('src');
+            let user = elem.closest('li').children[0].children[1].textContent;
             return {'userName':user,'photo':photo};
         },
         update:function (listL,listR) {
@@ -124,81 +170,47 @@
 
     }
     var userListRight = {
-        list:[{
-            userName: "Yehuda Katz",
-            photo: 'https://pp.userapi.com/c638324/v638324863/bbd5/JvAtEfnhYTI.jpg'
-        },
-        {
-            userName: "Yehuda1 Katz",
-            photo: 'https://pp.userapi.com/c638324/v638324863/bbd5/JvAtEfnhYTI.jpg'
-        },
-        {
-            userName: "Yehuda1 Katz",
-            photo: 'https://pp.userapi.com/c638324/v638324863/bbd5/JvAtEfnhYTI.jpg'
-        },
-        ]
+        list:[]
     }
 
     var userListLeft = {
-        list:[{
-            userName: "Друзьякин1 Евгений",
-            photo: 'https://pp.userapi.com/c622918/v622918902/1315a/O-iwiREkdo0.jpg'
-        },
-        {
-            userName: "Друзьякин2 Евгений",
-            photo: 'https://pp.userapi.com/c622918/v622918902/1315a/O-iwiREkdo0.jpg'
-        },
-        {
-            userName: "Друзьякин3 Евгений",
-            photo: 'https://pp.userapi.com/c622918/v622918902/1315a/O-iwiREkdo0.jpg'
-        },
-        {
-            userName: "Друзьякин4 Евгений",
-            photo: 'https://pp.userapi.com/c622918/v622918902/1315a/O-iwiREkdo0.jpg'
-        },
-        {
-            userName: "Друзьякин5 Евгений",
-            photo: 'https://pp.userapi.com/c622918/v622918902/1315a/O-iwiREkdo0.jpg'
-        },
-        {
-            userName: "Друзьякин6 Евгений",
-            photo: 'https://pp.userapi.com/c622918/v622918902/1315a/O-iwiREkdo0.jpg'
-        },
-        ]
+        list:[]
     }
 
-    userListLeft = JSON.parse(localStorage.dataL);
-    userListRight = JSON.parse(localStorage.dataR);
+    window.onload = content.init();
 
     let sortL = {list:[]};
     let sortR = {list:[]};
+    userListLeft = localStorage.dataL ? JSON.parse(localStorage.dataL) : userListLeft;
+    userListRight =localStorage.dataR ? JSON.parse(localStorage.dataR) : userListRight;
+
     sortL.list = userListLeft.list
     sortR.list = userListRight.list
+
     content.update(sortL,sortR);
 
-
-
     content.block.addEventListener('click',function (e) {
-        let elemL = e.target.classList.value === 'user__add'  ? e.target : e.target.parentElement.classList.value === 'user__add' ? e.target.parentElement : 0;
-        let elemR = e.target.classList.value === 'user__remove'  ? e.target : e.target.parentElement.classList.value === 'user__remove' ? e.target.parentElement : 0;
+        let elemL = e.target.closest('.user__add');
+        let elemR = e.target.closest('.user__remove');
 
         if(elemL){
             let data = content.dataF(elemL);
             content.removeUser(data.userName,userListLeft.list);
             content.addUser(data,userListRight.list)
-
         }
-        if(elemR){
+        else if(elemR){
             let data = content.dataF(elemR);
             content.removeUser(data.userName,userListRight.list);
             content.addUser(data,userListLeft.list)
+
+        }else {
+            return;
         }
         var eventL = new Event("keyup");
-        content.inputL.dispatchEvent(eventL);
         var eventR = new Event("keyup");
+        content.inputL.dispatchEvent(eventL);
         content.inputR.dispatchEvent(eventR);
         content.update(sortL,sortR);
-
     })
 
 
@@ -239,8 +251,7 @@
 
     function start(e) {
         e.dataTransfer.effectAllowed = 'move';
-
-        e.dataTransfer.setData('text/html',e.target.innerHTML)
+        e.dataTransfer.setData('text/html',JSON.stringify([e.target.closest('ul').classList[1],content.dataF(e.target)]))
     }
 
     function handleDragEnter(e) {
@@ -253,27 +264,34 @@
     }
 
     function handleDragDrop(e) {
-        var data = e.dataTransfer.getData('text/html');
-
-        var li = document.createElement('li');
-        li.classList.add('user');
-        li.setAttribute('draggable',true)
-        li.innerHTML = data;
-        e.target.closest('ul').appendChild(li);
-        e.stopPropagation();
+        var data = JSON.parse(e.dataTransfer.getData('text/html'));
+        let blockPos = e.target.closest('ul').classList[1];
+        if(blockPos ==='list-left-js' && blockPos !==data[0]){
+            content.removeUser(data[1].userName,userListRight.list);
+            content.addUser(data[1],userListLeft.list)
+        }
+        if (blockPos ==='list-right-js' && blockPos !==data[0]) {
+            content.removeUser(data[1].userName,userListLeft.list);
+            content.addUser(data[1],userListRight.list)
+        }
+        var eventL = new Event("keyup");
+        var eventR = new Event("keyup");
+        content.inputL.dispatchEvent(eventL);
+        content.inputR.dispatchEvent(eventR);
+        content.update(sortL,sortR);
         return false;
     }
 
-    content.listRight.addEventListener('dragover',handleDragOver, false);
-    content.listRight.addEventListener('drop',handleDragDrop, false);
-    // content.listRight.addEventListener('dragenter',handleDragEnter, false);
-
     content.listLeft.addEventListener('dragover',handleDragOver, false);
     content.listLeft.addEventListener('drop',handleDragDrop, false);
-    // content.listLeft.addEventListener('dragenter',handleDragEnter, false);
+    content.listLeft.addEventListener('dragenter',handleDragEnter, false);
 
-    let list = document.getElementsByTagName('li')
-        console.log(list);
+
+    content.listRight.addEventListener('dragover',handleDragOver, false);
+    content.listRight.addEventListener('drop',handleDragDrop, false);
+    content.listRight.addEventListener('dragenter',handleDragEnter, false);
+
+
 
     content.block.addEventListener('mousedown',function (e) {
         e.target.closest('li').addEventListener('dragstart', start, false);
