@@ -1,3 +1,5 @@
+import './css/myfile.css'
+
 let content = {
     init: function () {
         let self = this;
@@ -57,14 +59,6 @@ let content = {
     inputR: document.querySelector('.input-right'),
     block: document.querySelector('.block'),
     btnSave: document.querySelector('.btn-save'),
-    compR: function () {
-        let self = this;
-        return Handlebars.compile(self.templateR());
-    },
-    compL: function () {
-        let self = this;
-        return Handlebars.compile(self.templateL());
-    },
     removeUser: function(elem,list) {
         for (let i = 0; i < list.length;i++){
             if(list[i].userName === elem) {
@@ -81,8 +75,8 @@ let content = {
         return {'userName':user,'photo':photo};
     },
     update:function (listL,listR) {
-        this.listRight.innerHTML = this.compR()(listR);
-        this.listLeft.innerHTML = this.compL()(listL);
+        this.listRight.innerHTML = this.templateR(listR);
+        this.listLeft.innerHTML = this.templateL(listL);
     },
     check:function (full, chunk) {
         if (full.toLowerCase().indexOf(chunk.toLowerCase()) === -1) {
@@ -100,7 +94,6 @@ var userListRight = {
 var userListLeft = {
     list:[]
 }
-console.log(content.templateL())
 window.onload = content.init();
 
 let sortL = {list:[]};
